@@ -14,19 +14,19 @@ SetRelationshipBetweenGroups(1, `MEDIC`, `PLAYER`)
 SetRelationshipBetweenGroups(1, `COP`, `PLAYER`)
 SetRelationshipBetweenGroups(1, `PRISONER`, `PLAYER`)
 
-local density = lib.load('config.client')
+local config = lib.load('config.client')
 
 local function setDensity(type, value)
     if type == 'parked' then
-        density.parked = value
+        config.parked = value
     elseif type == 'vehicle' then
-        density.vehicle = value
+        config.vehicle = value
     elseif type == 'randomvehicles' then
-        density.randomvehicles = value
+        config.randomvehicles = value
     elseif type == 'peds' then
-        density.peds = value
+        config.peds = value
     elseif type == 'scenario' then
-        density.scenario = value
+        config.scenario = value
     end
 end
 
@@ -34,11 +34,18 @@ exports('SetDensity', setDensity)
 
 CreateThread(function()
     while true do
-        SetParkedVehicleDensityMultiplierThisFrame(density.parked)
-        SetVehicleDensityMultiplierThisFrame(density.vehicle)
-        SetRandomVehicleDensityMultiplierThisFrame(density.randomvehicles)
-        SetPedDensityMultiplierThisFrame(density.peds)
-        SetScenarioPedDensityMultiplierThisFrame(density.scenario, density.scenario) -- Walking NPC Density
+        SetParkedVehicleDensityMultiplierThisFrame(config.parked)
+        SetVehicleDensityMultiplierThisFrame(config.vehicle)
+        SetRandomVehicleDensityMultiplierThisFrame(config.randomvehicles)
+        SetPedDensityMultiplierThisFrame(config.peds)
+        SetScenarioPedDensityMultiplierThisFrame(config.scenario, config.scenario) -- Walking NPC Density
         Wait(0)
+    end
+end)
+
+CreateThread(function()
+    for x = 1, #config.removeVehiclesFromGeneratorsInArea do
+        local coords = config.removeVehiclesFromGeneratorsInArea[x]
+        RemoveVehiclesFromGeneratorsInArea((coords.x1 - 300.0), (coords.y1 - 300.0), (coords.z1 - 300.0), (coords.x2 + 300.0), (coords.y2 + 300.0), (coords.z2 + 300.0))
     end
 end)
